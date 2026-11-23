@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ByBadmaKhanda — Буузы ручной лепки</title>
+<style>
+  :root{
+    --cream:#faf7f2;
+    --terracotta:#a0522d;
+    --blue:#1a3b5c;
+    --dark:#1a1a1a;
+    --muted:#666;
+    --line:#e5ddd2;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    background:var(--cream);
+    color:var(--dark);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  a{text-decoration:none;color:inherit;}
+
+  /* ===== HEADER ===== */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    background:rgba(250,247,242,.92);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+    transition:box-shadow .3s;
+  }
+  header.scrolled{box-shadow:0 4px 20px rgba(0,0,0,.06);}
+  .nav{
+    max-width:1280px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 24px;
+  }
+  .logo{
+    font-size:1.3rem;font-weight:800;letter-spacing:-.5px;
+  }
+  .logo span{color:var(--terracotta);}
+  .nav-links{
+    display:flex;gap:32px;list-style:none;
+  }
+  .nav-links a{
+    font-size:.95rem;font-weight:500;color:#444;
+    position:relative;padding:4px 0;transition:color .2s;
+  }
+  .nav-links a::after{
+    content:'';position:absolute;left:0;bottom:0;
+    width:0;height:2px;background:var(--terracotta);
+    transition:width .3s;
+  }
+  .nav-links a:hover{color:var(--terracotta);}
+  .nav-links a:hover::after{width:100%;}
+  .nav-phone{
+    font-weight:600;color:var(--blue);font-size:.95rem;
+    padding:10px 20px;border:2px solid var(--blue);border-radius:50px;
+    transition:all .3s;
+  }
+  .nav-phone:hover{background:var(--blue);color:#fff;}
+
+  /* Бургер */
+  .burger{
+    display:none;flex-direction:column;gap:5px;
+    background:none;border:none;cursor:pointer;padding:8px;
+  }
+  .burger span{
+    width:26px;height:2.5px;background:var(--dark);border-radius:2px;
+    transition:all .3s;
+  }
+  .burger.active span:nth-child(1){transform:translateY(7.5px) rotate(45deg);}
+  .burger.active span:nth-child(2){opacity:0;}
+  .burger.active span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg);}
+
+  /* ===== HERO ===== */
+  .hero{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:60px;max-width:1280px;margin:0 auto;
+    padding:140px 24px 80px;
+    min-height:100vh;
+  }
+  .hero-content{flex:1;max-width:560px;}
+  .badge{
+    display:inline-block;background:#e8dccc;color:#5c4033;
+    padding:7px 18px;border-radius:30px;font-size:.78rem;
+    text-transform:uppercase;letter-spacing:1.5px;font-weight:600;
+    margin-bottom:24px;
+  }
+  h1{
+    font-size:clamp(2.4rem,5vw,4rem);
+    line-height:1.08;margin-bottom:24px;
+    letter-spacing:-1.5px;font-weight:800;
+  }
+  h1 span{color:var(--terracotta);}
+  .hero p{
+    font-size:1.15rem;color:var(--muted);
+    margin-bottom:36px;max-width:480px;
+  }
+  .cta-group{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:48px;}
+  .btn{
+    padding:16px 34px;border-radius:50px;font-weight:700;
+    font-size:1rem;transition:all .3s ease;display:inline-block;
+    border:2px solid transparent;cursor:pointer;font-family:inherit;
+  }
+  .btn-primary{
+    background:var(--blue);color:#fff;
+    box-shadow:0 6px 20px rgba(26,59,92,.3);
+  }
+  .btn-primary:hover{background:#0f263b;transform:translateY(-3px);box-shadow:0 10px 28px rgba(26,59,92,.4);}
+  .btn-secondary{
+    background:transparent;color:var(--blue);border-color:var(--blue);
+  }
+  .btn-secondary:hover{background:var(--blue);color:#fff;transform:translateY(-3px);}
+
+  .hero-stats{
+    display:flex;gap:40px;border-top:1px solid var(--line);padding-top:28px;
+    flex-wrap:wrap;
+  }
+  .stat-num{font-size:1.8rem;font-weight:800;color:var(--terracotta);line-height:1;}
+  .stat-label{font-size:.85rem;color:var(--muted);margin-top:4px;}
+
+  /* Фото герой — БОЛЬШОЕ */
+  .hero-image{
+    flex:1.1;
+    position:relative;
+    height:min(78vh,720px);
+    min-height:480px;
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:0 30px 60px rgba(0,0,0,.15);
+  }
+  .hero-image img{
+    width:100%;height:100%;object-fit:cover;
+    display:block;transition:transform 8s ease;
+  }
+  .hero-image:hover img{transform:scale(1.06);}
+  .hero-image::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.35));
+  }
+  .image-tag{
+    position:absolute;bottom:24px;left:24px;z-index:2;
+    background:rgba(255,255,255,.95);backdrop-filter:blur(8px);
+    padding:14px 22px;border-radius:16px;
+    display:flex;align-items:center;gap:12px;
+    box-shadow:0 8px 24px rgba(0,0,0,.12);
+  }
+  .image-tag .dot{
+    width:10px;height:10px;border-radius:50%;background:#2ecc71;
+    box-shadow:0 0 0 4px rgba(46,204,113,.2);
+  }
+  .image-tag strong{font-size:.9rem;display:block;}
+  .image-tag small{font-size:.78rem;color:var(--muted);}
+
+  /* ===== SECTIONS ===== */
+  section{padding:100px 24px;}
+  .container{max-width:1280px;margin:0 auto;}
+  .section-head{text-align:center;margin-bottom:56px;}
+  .section-head .kicker{
+    color:var(--terracotta);font-weight:700;font-size:.85rem;
+    text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;
+  }
+  .section-head h2{
+    font-size:clamp(1.9rem,3.5vw,2.8rem);
+    letter-spacing:-1px;font-weight:800;
+  }
+  .section-head p{color:var(--muted);max-width:560px;margin:14px auto 0;}
+
+  /* ===== MENU ===== */
+  #menu{background:#fff;}
+  .menu-tabs{
+    display:flex;justify-content:center;gap:10px;
+    margin-bottom:48px;flex-wrap:wrap;
+  }
+  .tab-btn{
+    padding:12px 28px;border-radius:50px;border:2px solid var(--line);
+    background:transparent;font-family:inherit;font-size:.95rem;
+    font-weight:600;color:#555;cursor:pointer;transition:all .25s;
+  }
+  .tab-btn:hover{border-color:var(--terracotta);color:var(--terracotta);}
+  .tab-btn.active{
+    background:var(--blue);border-color:var(--blue);color:#fff;
+  }
+  .menu-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:28px;
+  }
+  .menu-card{
+    background:var(--cream);border-radius:22px;overflow:hidden;
+    transition:transform .35s,box-shadow .35s;
+    display:none;
+  }
+  .menu-card.show{display:block;animation:fadeIn .4s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+  .menu-card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.1);}
+  .menu-card .photo{
+    height:220px;overflow:hidden;position:relative;
+  }
+  .menu-card .photo img{
+    width:100%;height:100%;object-fit:cover;
+    transition:transform .5s;
+  }
+  .menu-card:hover .photo img{transform:scale(1.08);}
+  .menu-card .price{
+    position:absolute;top:14px;right:14px;
+    background:var(--cream);padding:7px 16px;border-radius:30px;
+    font-weight:800;font-size:.95rem;color:var(--blue);
+    box-shadow:0 4px 14px rgba(0,0,0,.12);
+  }
+  .menu-card .body{padding:22px 24px 26px;}
+  .menu-card h3{font-size:1.2rem;margin-bottom:8px;font-weight:700;}
+  .menu-card p{font-size:.9rem;color:var(--muted);}
+
+  /* ===== ABOUT ===== */
+  #about{background:var(--cream);}
+  .about-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;
+  }
+  .about-img{
+    border-radius:24px;overflow:hidden;height:520px;
+    box-shadow:0 24px 50px rgba(0,0,0,.12);
+  }
+  .about-img img{width:100%;height:100%;object-fit:cover;}
+  .about-text h2{font-size:clamp(1.8rem,3vw,2.5rem);margin-bottom:24px;letter-spacing:-1px;}
+  .about-text p{color:#555;margin-bottom:18px;}
+  .about-features{display:flex;flex-direction:column;gap:18px;margin-top:32px;}
+  .feature{display:flex;gap:16px;align-items:flex-start;}
+  .feature .ic{
+    flex-shrink:0;width:48px;height:48px;border-radius:14px;
+    background:#e8dccc;display:flex;align-items:center;justify-content:center;
+    font-size:1.4rem;
+  }
+  .feature h4{font-size:1rem;margin-bottom:2px;}
+  .feature span{font-size:.88rem;color:var(--muted);}
+
+  /* ===== CONTACTS ===== */
+  #contacts{background:#fff;}
+  .contact-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:48px;
+  }
+  .contact-info{display:flex;flex-direction:column;gap:28px;}
+  .contact-item{display:flex;gap:18px;align-items:flex-start;}
+  .contact-item .ic{
+    flex-shrink:0;width:54px;height:54px;border-radius:16px;
+    background:var(--cream);display:flex;align-items:center;justify-content:center;
+    font-size:1.5rem;border:1px solid var(--line);
+  }
+  .contact-item h4{font-size:.85rem;text-transform:uppercase;letter-spacing:1px;color:var(--terracotta);margin-bottom:4px;}
+  .contact-item p{font-size:1.05rem;font-weight:600;color:var(--dark);}
+  .contact-item a{color:var(--blue);font-weight:600;}
+  .contact-item a:hover{text-decoration:underline;}
+  .contact-map{
+    border-radius:24px;overflow:hidden;min-height:400px;
+    box-shadow:0 20px 40px rgba(0,0,0,.1);
+  }
+  .contact-map iframe{width:100%;height:100%;border:0;min-height:400px;display:block;}
+
+  /* ===== FOOTER ===== */
+  footer{
+    background:var(--blue);color:#fff;padding:56px 24px 28px;
+  }
+  .footer-inner{
+    max-width:1280px;margin:0 auto;
+    display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;
+    padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.15);
+  }
+  footer .logo{color:#fff;font-size:1.4rem;margin-bottom:16px;}
+  footer .logo span{color:#e8b88a;}
+  footer p{color:rgba(255,255,255,.65);font-size:.92rem;max-width:320px;}
+  footer h5{font-size:.8rem;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:18px;color:#e8b88a;}
+  footer ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+  footer ul a{color:rgba(255,255,255,.75);font-size:.92rem;transition:color .2s;}
+  footer ul a:hover{color:#fff;}
+  .footer-bottom{
+    max-width:1280px;margin:24px auto 0;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    font-size:.85rem;color:rgba(255,255,255,.5);
+  }
+  .socials{display:flex;gap:12px;margin-top:20px;}
+  .socials a{
+    width:42px;height:42px;border-radius:12px;
+    background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;transition:background .25s;
+  }
+  .socials a:hover{background:var(--terracotta);}
+
+  /* ===== RESPONSIVE ===== */
+  @media(max-width:900px){
+    .hero{flex-direction:column;padding:120px 20px 60px;min-height:auto;gap:40px;}
+    .hero-content{max-width:100%;}
+    .hero-image{width:100%;height:60vh;min-height:400px;flex:none;}
+    .nav-links{
+      position:fixed;top:70px;left:0;right:0;
+      background:var(--cream);flex-direction:column;gap:0;
+      padding:12px 24px;border-bottom:1px solid var(--line);
+      transform:translateY(-150%);transition:transform .35s;
+      box-shadow:0 12px 24px rgba(0,0,0,.08);
+    }
+    .nav-links.open{transform:translateY(0);}
+    .nav-links li{padding:14px 0;border-bottom:1px solid var(--line);}
+    .nav-phone{display:none;}
+    .burger{display:flex;}
+    .about-grid,.contact-grid{grid-template-columns:1fr;gap:36px;}
+    .about-img{height:380px;}
+    .footer-inner{grid-template-columns:1fr;gap:32px;}
+    section{padding:70px 20px;}
+  }
+  @media(max-width:480px){
+    .hero-stats{gap:24px;}
+    .stat-num{font-size:1.5rem;}
+    .btn{padding:14px 26px;font-size:.92rem;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="header">
+  <nav class="nav">
+    <div class="logo">By<span>BadmaKhanda</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home">Главная</a></li>
+      <li><a href="#menu">Меню</a></li>
+      <li><a href="#about">О нас</a></li>
+      <li><a href="#contacts">Контакты</a></li>
+    </ul>
+    <a href="tel:+79240125577" class="nav-phone">+7 (924) 012-55-77</a>
+    <button class="burger" id="burger" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-content">
+    <span class="badge">Ручная лепка • Улан-Удэ</span>
+    <h1>Буузы от <span>Бадма-Ханды</span></h1>
+    <p>Аутентичный вкус бурятской кухни по семейным рецептам народной артистки. Отборное мясо, тонкое тесто и атмосфера тепла в каждом кусочке.</p>
+    <div class="cta-group">
+      <a href="#menu" class="btn btn-primary">Заказать доставку</a>
+      <a href="#contacts" class="btn btn-secondary">Наше кафе</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-num">30+</div><div class="stat-label">лет семейному рецепту</div></div>
+      <div><div class="stat-num">100%</div><div class="stat-label">ручная лепка</div></div>
+      <div><div class="stat-num">45 мин</div><div class="stat-label">доставка по городу</div></div>
+    </div>
+  </div>
+  <div class="hero-image">
+    <img src="https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?q=80&w=1200&auto=format&fit=crop" alt="Буузы ручной лепки">
+    <div class="image-tag">
+      <span class="dot"></span>
+      <div>
+        <strong>Готовим сейчас</strong>
+        <small>Свежая партия каждые 2 часа</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker">Наше меню</div>
+      <h2>Буузы и не только</h2>
+      <p>Всё готовим вручную из отборного мяса и тонкого теста. Выберите категорию.</p>
+    </div>
+
+    <div class="menu-tabs" id="menuTabs">
+      <button class="tab-btn active" data-cat="buuzy">Буузы</button>
+      <button class="tab-btn" data-cat="soups">Супы</button>
+      <button class="tab-btn" data-cat="drinks">Напитки</button>
+    </div>
+
+    <div class="menu-grid" id="menuGrid">
+      <!-- Буузы -->
+      <div class="menu-card show" data-cat="buuzy">
+        <div class="photo">
+          <img src="https://images.unsplash.com/photo-1496116218417-1a781b1c416c?q=80&w=800&auto=format&fit=crop" alt="Буузы классические">
+          <span class="price">280 ₽</span>
+        </div>
+        <div class="body">
+          <h3>Буузы классические</h3>
+          <p>Говядина и свинина, лук, специи. 4 шт.</p>
+        </div>
+      </div>
+      <div class="menu-card show" data-cat="buuzy">
+        <div class="photo">
+          <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800&auto=format&fit=crop" alt="Буузы из баранины">
+          <span class="price">320 ₽</span>
+        </div>
+        <div class="body">
+          <h3>Буузы из баранины</h3>
+          <p>Сочная баранина с бульоном внутри. 4 шт.</p>
+        </div>
+      </div>
+      <div class="menu-card show" data-cat="buuzy">
+        <div class="photo">
+          <img src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800&auto=format&fit=crop" alt="Буузы с говядиной">
+          <span class="price">300 ₽</span>
+        </div>
+        <div class="body">
+          <h3>Буузы с говядиной</h3>
+          <p>Постная говядина, много лука, бульон. 4 шт.</p>
+        </div>
+      </div>
+      <!-- Супы -->
+      <div class="menu-card" data-cat="soups">
+        <div class="photo">
+          <img src="https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=800&auto=format&fit=crop" alt="Шулэн">
+          <span class="price">250 ₽</span>
+        </div>
+        <div class="body">
+          <h3>Шулэн</h3>
+          <p>Бурятский суп с домашней лапшой и мясом.</p>
+        </div>
+      </div>
+      <div class="menu-card" data-cat="soups">
+        <div class="photo">
+          <img src="https://images.unsplash.com/photo-1603105037880-880cd4edfb0d?q=80&w=800&auto=format&fit=crop" alt="Бухлёр">
+          <span class="price">290 ₽</span>
+        </div>
+        <div class="body">
+          <h3>Бухлёр</h3>
+          <p>Наваристый бульон с бараниной и зеленью.</p>
+        </div>
+      </div>
+      <!-- Напитки -->
+      <div class="menu-card" data-cat="drinks">
+        <div class="photo">
+          <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?q=80&w=800&auto=format&fit=crop" alt="Сай">
+          <span class="price">120 ₽</span>
+        </div>
+        <div class="body">
+          <h3>Сай (бурятский чай)</h3>
+          <p>Чёрный чай с молоком, солью и маслом.</p>
+        </div>
+      </div>
+      <div class="menu-card" data-cat="drinks">
+        <div class="photo">
+          <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800&auto=format&fit=crop" alt="Кофе">
+          <span class="price">150 ₽</span>
+        </div>
+        <div class="body">
+          <h3>Кофе</h3>
+          <p>Свежесваренный американо или капучино.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container about-grid">
+    <div class="about-img">
+      <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=1000&auto=format&fit=crop" alt="Ручная лепка бууз">
+    </div>
+    <div class="about-text">
+      <div class="kicker">О нас</div>
+      <h2>Вкус, который объединяет</h2>
+      <p>ByBadmaKhanda — это семейное дело народной артистки Бурятии Бадма-Ханды Аюшеевой. Мы готовим буузы по рецепту, который передаётся в семье из поколения в поколение.</p>
+      <p>Для нас бууза — не просто еда, а ритуал: тонкое тесто, сочная начинка и бульон внутри, который нужно пить первым.</p>
+      <div class="about-features">
+        <div class="feature">
+          <div class="ic">🥟</div>
+          <div><h4>Ручная лепка</h4><span>Каждую буузу лепим вручную по традиционной технологии.</span></div>
+        </div>
+        <div class="feature">
+          <div class="ic">🥩</div>
+          <div><h4>Отборное мясо</h4><span>Только свежая говядина и баранина от проверенных поставщиков.</span></div>
+        </div>
+        <div class="feature">
+          <div class="ic">🔥</div>
+          <div><h4>Свежая партия</h4><span>Готовим каждые 2 часа — вы получаете горячие буузы.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTS -->
+<section id="contacts">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker">Контакты</div>
+      <h2>Заходите в гости</h2>
+      <p>Мы в центре Улан-Удэ. Можно заказать доставку или забронировать столик.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="contact-item">
+          <div class="ic">📍</div>
+          <div><h4>Адрес</h4><p>ул. Терешковой, 2а</p></div>
+        </div>
+        <div class="contact-item">
+          <div class="ic">📞</div>
+          <div><h4>Телефон</h4><p><a href="tel:+79240125577">+7 (924) 012-55-77</a></p></div>
+        </div>
+        <div class="contact-item">
+          <div class="ic">⏰</div>
+          <div><h4>Режим работы</h4><p>Ежедневно 10:00 — 19:00</p></div>
+        </div>
+        <div class="contact-item">
+          <div class="ic">✉️</div>
+          <div><h4>Почта</h4><p><a href="mailto:hello@bybadmakhanda.ru">hello@bybadmakhanda.ru</a></p></div>
+        </div>
+        <a href="https://wa.me/79240125577" class="btn btn-primary" style="margin-top:8px;">Написать в WhatsApp</a>
+      </div>
+      <div class="contact-map">
+        <iframe src="https://www.google.com/maps?q=Улан-Удэ, улица Терешковой 2а&output=embed" loading="lazy" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="logo">By<span>BadmaKhanda</span></div>
+      <p>Аутентичные бурятские буузы ручной лепки по семейным рецептам. Улан-Удэ.</p>
+      <div class="socials">
+        <a href="https://www.instagram.com/bybadmakhanda" target="_blank" rel="noopener" aria-label="Instagram">📷</a>
+        <a href="https://wa.me/79240125577" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+        <a href="tel:+79240125577" aria-label="Телефон">📞</a>
+      </div>
+    </div>
+    <div>
+      <h5>Навигация</h5>
+      <ul>
+        <li><a href="#home">Главная</a></li>
+        <li><a href="#menu">Меню</a></li>
+        <li><a href="#about">О нас</a></li>
+        <li><a href="#contacts">Контакты</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Контакты</h5>
+      <ul>
+        <li>ул. Терешковой, 2а</li>
+        <li><a href="tel:+79240125577">+7 (924) 012-55-77</a></li>
+        <li>10:00 — 19:00</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 ByBadmaKhanda. Все права защищены.</span>
+    <span>Сделано с любовью к бурятской кухне</span>
+  </div>
+</footer>
+
+<script>
+  // Бургер-меню
+  const burger = document.getElementById('burger');
+  const navLinks = document.getElementById('navLinks');
+  burger.addEventListener('click', () => {
+    burger.classList.toggle('active');
+    navLinks.classList.toggle('open');
+  });
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      burger.classList.remove('active');
+      navLinks.classList.remove('open');
+    });
+  });
+
+  // Тень хедера при скролле
+  const header = document.getElementById('header');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Вкладки меню
+  const tabs = document.querySelectorAll('.tab-btn');
+  const cards = document.querySelectorAll('.menu-card');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const cat = tab.dataset.cat;
+      cards.forEach(card => {
+        card.classList.toggle('show', card.dataset.cat === cat);
+      });
+    });
+  });
+</script>
+</body>
+</html>
